@@ -1,0 +1,9 @@
+.vscode
+.attic
+
+__pycache__
+*_cache
+venv
+
+.secrets
+secrets.json
