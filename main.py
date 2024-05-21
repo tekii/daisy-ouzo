@@ -35,9 +35,9 @@ _gln_pattern = re.compile("[0-9]{13,14}")
 
 _catalog = ThePartyCatalog()
 
-
+@app.route("/search/<gln>/<cuit>")
 @app.route("/gln/<gln>")
-def lookup_gln(gln=None):
+def lookup_gln(gln=None,cuit=None):
 
     if gln is None or _gln_pattern.fullmatch(gln) is None:
         abort(400, "Undefined/malformed GLN resource")
