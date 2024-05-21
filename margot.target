@@ -1,0 +1,13 @@
+# MARGOT
+# TOP 
+
+[Unit]
+Description=MARGOT Services
+#After=home-margot.mount network.target
+#Requires=default.target
+#After=default.target
+#RequiresMountsFor=/home/margot
+#ConditionPathExists=/home/margot/VALID_MARGOT_DEPLOY
+
+[Install]
+WantedBy=default.target

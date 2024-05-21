@@ -1,0 +1,20 @@
+# MARGOT
+# OUZO
+
+[Unit]
+Description=MARGOT OUZO - PartyLookup
+Requires=network.target
+After=margot.target
+BindsTo=margot.target
+
+[Service]
+Type=simple
+User=margot
+Group=margot
+WorkingDirectory=${HOME}/daisy/ouzo_root
+Environment="PATH=${HOME}/daisy/ouzo_root/venv/bin"
+#EnvironmentFile=${HOME}/daisy/ouzo_root/environment
+ExecStart=${HOME}/daisy/ouzo_root/venv/bin/gunicorn :12010 --workers 1 --threads 4 --timeout 0 main:app 
+
+[Install]
+WantedBy=margot.target
