@@ -1,3 +1,4 @@
+import logging.handlers
 import os
 import re
 import logging
@@ -12,8 +13,11 @@ _logger = logging.getLogger("ouzo")
 if __name__ != "__main__" and __name__ != "__test__":
     gunicorn_error_logger = logging.getLogger("gunicorn.error")
     logging.basicConfig(level=gunicorn_error_logger.getEffectiveLevel(), handlers=gunicorn_error_logger.handlers)
+    app.logger.setLevel(gunicorn_error_logger.getEffectiveLevel())
+    app.logger.handlers = gunicorn_error_logger.handlers
 else:
     logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
+    # logging.handlers = app.logger.handlers
 
 
 @app.errorhandler(500)
@@ -26,7 +30,7 @@ def unauthorized(e):
 @app.errorhandler(404)
 def unauthorized(e):
     # error = str(e)
-    error = f'URL "{request.url}" not found.'
+    error = f"URL {request.path} not found."
     _logger.error(error)
     return jsonify(error=error), 404
 
