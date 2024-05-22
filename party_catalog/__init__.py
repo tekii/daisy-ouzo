@@ -42,7 +42,7 @@ class ThePartyCatalog(object):
 
         if item is None:
 
-            _logger.info(msg=f"Cache MISS:{gln}")
+            _logger.info(msg=f"Cache MISS {gln}")
 
             query = f"""SELECT gln, cuit, id_tipo_agente, nombre_tipo_agente FROM `{self._project_id}.orange.catalogo_electronico_by_gln` WHERE gln = @gln LIMIT 1000;"""
             job_config = bigquery.QueryJobConfig(query_parameters=[bigquery.ScalarQueryParameter("gln", "STRING", gln)])
@@ -60,9 +60,9 @@ class ThePartyCatalog(object):
 
             item["cached"] = False
 
-            _logger.debug("Cache size:%i", len(self._cache))
+            _logger.debug("Cache SIZE %i", len(self._cache))
         else:
-            _logger.debug(msg=f"Cache HIT:{gln}")
+            _logger.debug(msg=f"Cache HIT {gln}")
 
         return item
 
