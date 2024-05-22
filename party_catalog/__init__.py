@@ -6,6 +6,8 @@ from google.cloud import bigquery
 
 __all__ = ["ThePartyCatalog"]
 
+_logger = logging.getLogger(__name__)
+
 
 class ThePartyCatalog(object):
 
@@ -40,13 +42,15 @@ class ThePartyCatalog(object):
 
         if item is None:
 
+            _logger.info(msg=f"Cache MISS:{gln}")
+
             query = f"""SELECT gln, cuit, id_tipo_agente, nombre_tipo_agente FROM `{self._project_id}.orange.catalogo_electronico_by_gln` WHERE gln = @gln LIMIT 1000;"""
             job_config = bigquery.QueryJobConfig(query_parameters=[bigquery.ScalarQueryParameter("gln", "STRING", gln)])
             results = self._client.query_and_wait(query, job_config=job_config)  # Make an API request.
 
             n = results.total_rows
             if n > 1:
-                pass
+                _logger.warning(msg=f"Query return {n} results.")
 
             row = next(results)
 
@@ -55,6 +59,10 @@ class ThePartyCatalog(object):
             self._cache[gln] = item.copy()
 
             item["cached"] = False
+
+            _logger.debug("Cache size:%i", len(self._cache))
+        else:
+            _logger.debug(msg=f"Cache HIT:{gln}")
 
         return item
 
