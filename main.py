@@ -25,7 +25,8 @@ def unauthorized(e):
 
 @app.errorhandler(404)
 def unauthorized(e):
-    error = str(e)
+    # error = str(e)
+    error = f'URL "{request.url}" not found.'
     _logger.error(error)
     return jsonify(error=error), 404
 
