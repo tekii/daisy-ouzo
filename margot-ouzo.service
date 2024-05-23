@@ -7,12 +7,11 @@ After=margot.target
 BindsTo=margot.target
 
 [Service]
-# TODO Restart=on-failure and notify
-Type=simple
+Type=notify
 WorkingDirectory=/home/margot/daisy/ouzo_root
 Environment=PYTHONUNBUFFERED=1
 Environment="PATH=/home/margot/daisy/ouzo_root/venv/bin"
-ExecStart=/home/margot/daisy/ouzo_root/venv/bin/gunicorn --bind :12010 --workers 1 --threads 4 --timeout 0 main:app
+ExecStart=/home/margot/daisy/ouzo_root/venv/bin/gunicorn --bind :12010 --workers 2 --threads 1 --timeout 0 main:app
 
 [Install]
 WantedBy=margot.target
