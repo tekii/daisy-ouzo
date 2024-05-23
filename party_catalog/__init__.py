@@ -49,6 +49,10 @@ class ThePartyCatalog(object):
             results = self._client.query_and_wait(query, job_config=job_config)  # Make an API request.
 
             n = results.total_rows
+
+            if n == 0:
+                return None
+
             if n > 1:
                 _logger.warning(msg=f"Query return {n} results.")
 

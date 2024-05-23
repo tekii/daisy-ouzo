@@ -21,14 +21,14 @@ else:
 
 
 @app.errorhandler(500)
-def unauthorized(e):
+def handle_500(e):
     _logger.exception(msg=">>>>>>>>>", exc_info=e)
     error = str(e)
     return jsonify(error=error), 500
 
 
 @app.errorhandler(404)
-def unauthorized(e):
+def handle_404(e):
     # error = str(e)
     error = f"URL {request.path} not found."
     _logger.error(error)
@@ -36,7 +36,7 @@ def unauthorized(e):
 
 
 @app.errorhandler(400)
-def unauthorized(e):
+def handle_400(e):
     error = str(e)
     _logger.error(error)
     return jsonify(error=error), 400
@@ -52,7 +52,7 @@ _catalog = ThePartyCatalog()
 def lookup_gln(gln=None, cuit=None):
 
     if gln is None or _gln_pattern.fullmatch(gln) is None:
-        abort(400, "Undefined/malformed GLN resource")
+        abort(400, f"{gln} is either undefined or malformed GLN resource")
 
     result = _catalog.lookup(gln)
 

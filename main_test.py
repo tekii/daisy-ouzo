@@ -46,3 +46,12 @@ def test_02(client):
     response = client.get(url)
     assert response.status_code == 200
     assert response.data == b'{"cuit":"30710261551","gln":"7798165540006","idTipoAgente":4,"nombreTipoAgente":"DROGUERIA"}\n'
+
+
+def test_03(client):
+
+    with client.application.test_request_context():
+        url_1 = url_for("lookup_gln", gln="8888888888888")
+
+    response = client.get(url_1)
+    assert response.status_code == 404
