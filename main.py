@@ -72,6 +72,7 @@ def lookup_gtin(gtin=None):
         valid_gtin.verify()
 
     except ValueError:
+        _logger.error("gtin %s invalid.", gtin)
         error = {
             "errorType": "MARGARITA",
             "errorCode": 4003,
