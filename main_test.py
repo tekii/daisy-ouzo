@@ -55,3 +55,13 @@ def test_03(client):
 
     response = client.get(url_1)
     assert response.status_code == 404
+
+
+def test_04(client):
+
+    with client.application.test_request_context():
+        url = url_for("lookup_gtin", gtin="7793397051573")
+
+    response = client.get(url)
+    assert response.status_code == 200
+    assert response.data == b'{"gtin":"07793397051573"}\n'

@@ -1,9 +1,11 @@
 import logging.handlers
 import os
 import re
+from datetime import datetime, timezone
 import logging
 
 from flask import Flask, request, abort, jsonify
+import gs1
 from party_catalog import *
 
 app = Flask(__name__)
@@ -60,6 +62,25 @@ def lookup_gln(gln=None, cuit=None):
         abort(404, f"GLN {gln} not found.")
 
     return jsonify(result)
+
+
+@app.route("/gtin/<gtin>")
+def lookup_gtin(gtin=None):
+
+    try:
+        valid_gtin = gs1.GTIN(gtin)
+        valid_gtin.verify()
+
+    except ValueError:
+        error = {
+            "errorType": "MARGARITA",
+            "errorCode": 4003,
+            "errorArgs": {"gtin": [gtin], "origen": ["TradeItemLookup"], "message": ["Some error message."]},
+            "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
+        }
+        return jsonify(error), 400
+
+    return jsonify({"gtin": str(valid_gtin)})
 
 
 if __name__ == "__main__":
