@@ -80,7 +80,7 @@ def event_lookup(movimiento, file):
                     "origen": [__name__],
                     "argumentos": ["actor", "file"],
                     "valores": ["TUTEUR", file],
-                    "mensaje": "No se reconoce el movimiento",
+                    "mensaje": ["No se reconoce el movimiento"],
                 },
             )
 

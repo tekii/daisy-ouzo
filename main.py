@@ -100,7 +100,7 @@ def lookup_event(movimiento=None, file=None):
             "errorArgs": e.erroArgs,
             "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
         }
-        return jsonify(error), 400
+        return jsonify([error]), 400
 
 
 if __name__ == "__main__":
