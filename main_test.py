@@ -65,3 +65,23 @@ def test_04(client):
     response = client.get(url)
     assert response.status_code == 200
     assert response.data == b'{"gtin":"07793397051573"}\n'
+
+
+def test_05(client):
+
+    with client.application.test_request_context():
+        url = url_for("lookup_event", movimiento="07", file="TUTEUR0000.TXT")
+
+    response = client.get(url)
+    assert response.status_code == 200
+    # assert response.data == b'{"gtin":"07793397051573"}\n'
+
+
+def test_06(client):
+
+    with client.application.test_request_context():
+        url = url_for("lookup_event", movimiento="00", file="TUTEUR0000.TXT")
+
+    response = client.get(url)
+    assert response.status_code == 400
+    # assert response.data == b'{"gtin":"07793397051573"}\n'

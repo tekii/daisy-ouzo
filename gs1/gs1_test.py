@@ -46,19 +46,3 @@ def test_04():
         gln = gs1.GLN("7798140310005")
         gln.verify()
     assert e.type == ValueError
-
-
-a = {"gtin": "07793397051573"}
-
-{
-    "errorType": "MARGARITA",
-    "errorCode": 4003,
-    "errorArgs": {"gtin": ["7793397051572"], "origen": ["TradeItemLookup"], "message": ["El dígito verificador es incorrecto"]},
-    "errorTimeStamp": "2024-05-23T23:45:10.605Z",
-}
-{
-    "errorType": "MARGARITA",
-    "errorCode": 4003,
-    "errorArgs": {"gtin": ["77933970"], "origen": ["TradeItemLookup"]},
-    "errorTimeStamp": "2024-05-23T23:45:55.411Z",
-}

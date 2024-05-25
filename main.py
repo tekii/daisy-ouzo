@@ -7,6 +7,8 @@ import logging
 from flask import Flask, request, abort, jsonify
 import gs1
 from party_catalog import *
+from event_lookup import event_lookup
+from tkerror import TkError
 
 app = Flask(__name__)
 
@@ -82,6 +84,22 @@ def lookup_gtin(gtin=None):
         return jsonify(error), 400
 
     return jsonify({"gtin": str(valid_gtin)})
+
+
+@app.route("/tuteur/<movimiento>/<file>")
+def lookup_event(movimiento=None, file=None):
+
+    try:
+        result = event_lookup(movimiento, file)
+        return jsonify(result)
+    except TkError as e:
+        error = {
+            "errorType": "MARGARITA",
+            "errorCode": e.errorCode,
+            "errorArgs": e.erroArgs,
+            "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
+        }
+        return jsonify(error), 400
 
 
 if __name__ == "__main__":
