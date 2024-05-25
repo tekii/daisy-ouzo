@@ -68,7 +68,7 @@ def lookup_gln(gln=None, cuit=None):
 
 @app.route("/gtin/<gtin>")
 def lookup_gtin(gtin=None):
-
+    _logger.debug("/gtin/%s", gtin)
     try:
         valid_gtin = gs1.GTIN(gtin)
         valid_gtin.verify()
@@ -88,11 +88,12 @@ def lookup_gtin(gtin=None):
 
 @app.route("/tuteur/<movimiento>/<file>")
 def lookup_event(movimiento=None, file=None):
-
+    _logger.debug("/tuteur/%s/%s", movimiento, file)
     try:
         result = event_lookup(movimiento, file)
         return jsonify(result)
     except TkError as e:
+        _logger.error(msg=f"MARGARITA-{e.errorCode}")
         error = {
             "errorType": "MARGARITA",
             "errorCode": e.errorCode,
