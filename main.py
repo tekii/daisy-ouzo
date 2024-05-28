@@ -9,6 +9,7 @@ import gs1
 from party_catalog import *
 from event_lookup import event_lookup
 from tkerror import TkError
+import row_uuid
 
 app = Flask(__name__)
 
@@ -44,6 +45,18 @@ def handle_400(e):
     error = str(e)
     _logger.error(error)
     return jsonify(error=error), 400
+
+
+@app.errorhandler(TkError)
+def handle_tkerror(e):
+    _logger.error(msg=f"MARGARITA-{e.errorCode}")
+    error = {
+        "errorType": "MARGARITA",
+        "errorCode": e.errorCode,
+        "errorArgs": e.erroArgs,
+        "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
+    }
+    return jsonify([error]), 400
 
 
 _gln_pattern = re.compile("[0-9]{13,14}")
@@ -89,18 +102,15 @@ def lookup_gtin(gtin=None):
 @app.route("/tuteur/<movimiento>/<file>")
 def lookup_event(movimiento=None, file=None):
     _logger.debug("/tuteur/%s/%s", movimiento, file)
-    try:
-        result = event_lookup(movimiento, file)
-        return jsonify(result)
-    except TkError as e:
-        _logger.error(msg=f"MARGARITA-{e.errorCode}")
-        error = {
-            "errorType": "MARGARITA",
-            "errorCode": e.errorCode,
-            "errorArgs": e.erroArgs,
-            "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
-        }
-        return jsonify([error]), 400
+    result = event_lookup(movimiento, file)
+    return jsonify(result)
+
+
+@app.route("/<string:actor>/<int:row>/<path:encoded_path>")
+def calculate_rowid(actor, row, encoded_path):
+    _logger.debug("/%s/%d/%s", actor, row, encoded_path)
+    result = row_uuid.calculate(actor, row, encoded_path)
+    return result, 200
 
 
 if __name__ == "__main__":

@@ -85,3 +85,19 @@ def test_06(client):
     response = client.get(url)
     assert response.status_code == 400
     # assert response.data == b'{"gtin":"07793397051573"}\n'
+
+
+def test_07(client):
+
+    with client.application.test_request_context():
+        url = url_for(
+            "calculate_rowid",
+            actor="7793397000007",
+            row="1",
+            encoded_path="mnt%2Faux%2Fdfs%2Fmails%2Fafms%2F20120816%2F1200%2Fremitos.csv",
+        )
+
+    # url = "/7793397000007/1/mnt%2Faux%2Fdfs%2Fmails%2Fafms%2F20120816%2F1200%2Fremitos.csv"
+    response = client.get(url)
+    assert response.status_code == 200
+    assert response.data == b"fcbdda10f1e63863ae0c52345b626009"
