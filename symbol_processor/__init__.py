@@ -1,12 +1,11 @@
 """SymbolProcessor"""
 
 import re
+from tkerror import TkError
 
 __all__ = ["parse"]
 
 _RE = re.compile(r"^01(0?\d{13})21([^+]{1,20})\+?17((?:1[1-9]|2[0-9])(?:0[1-9]|1[012])(?:[012]\d|30|31))10(.{1,20})$|^(.{1,20})$")
-# _EXSA___RE = re.compile(r"^01(0?\d{13})21([^+]{1,20})\+?17((?:1[1-9]|2[0-9])(?:0[1-9]|1[012])(?:[012]\d|30|31))10(.{1,20})$")
-# _TUTEUR_RE = re.compile(r"^(.{1,20})$")
 
 
 def parse(serial_w_id: str, actor=None, batch=None, lab=None, gtin=None):
@@ -35,4 +34,13 @@ def parse(serial_w_id: str, actor=None, batch=None, lab=None, gtin=None):
         return symbol
 
     else:
-        return None
+
+        raise TkError(
+            errorCode=TkError.MAR.SERIAL_PROCESSOR_PARSE_ERROR,
+            errorArgs={
+                "origen": [__name__],
+                "argumentos": ["serie"],
+                "valores": [serial_w_id],
+                "message": ["message"],
+            },
+        )

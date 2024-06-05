@@ -110,3 +110,12 @@ def test_08(client):
 
     response = client.get(url)
     assert response.status_code == 200
+
+
+def test_09(client):
+
+    with client.application.test_request_context():
+        url = url_for("serial_processor", serial_w_id="01080540830151632110000042624017260216101207642")
+
+    response = client.get(url)
+    assert response.status_code == 200

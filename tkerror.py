@@ -11,6 +11,7 @@ class TkError(Exception):
         TABLA_INEXISTENTE = 6004
         # no procesable
         EVENTO_NO_INFORMABLE = 7001
+        SERIAL_PROCESSOR_PARSE_ERROR = 7003
 
     def __init__(self, errorCode, errorArgs):
         self.errorCode = errorCode

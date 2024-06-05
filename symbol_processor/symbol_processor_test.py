@@ -1,5 +1,6 @@
 import pytest
 import symbol_processor
+from tkerror import TkError
 
 
 def test_exsa_01():
@@ -14,3 +15,9 @@ def test_exsa_01():
 def test_tuteur_02():
     symbol_processor.parse("00001000")
     pass
+
+
+def test_exsa_03():
+    with pytest.raises(TkError) as e:
+        symbol_processor.parse("")
+    assert e.type == TkError
