@@ -10,6 +10,7 @@ from party_catalog import *
 from event_lookup import event_lookup
 from tkerror import TkError
 import row_uuid
+import symbol_processor
 
 app = Flask(__name__)
 
@@ -103,6 +104,17 @@ def lookup_gtin(gtin=None):
 def lookup_event(movimiento=None, file=None):
     _logger.debug("/tuteur/%s/%s", movimiento, file)
     result = event_lookup(movimiento, file)
+    return jsonify(result)
+
+
+@app.route("/serialProcessor/<string:serial_w_id>")
+def serial_processor(serial_w_id):
+    _logger.debug("/tuteur/%s", serial_w_id)
+    actor = request.args.get("actor", type=str)
+    batch = request.args.get("batch", type=str)
+    lab = request.args.get("lab", type=str)
+    gtin = request.args.get("gtin", type=str)
+    result = symbol_processor.parse(serial_w_id, actor, batch, lab, gtin)
     return jsonify(result)
 
 

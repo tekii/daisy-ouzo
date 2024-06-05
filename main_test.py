@@ -101,3 +101,12 @@ def test_07(client):
     response = client.get(url)
     assert response.status_code == 200
     assert response.data == b"fcbdda10f1e63863ae0c52345b626009"
+
+
+def test_08(client):
+
+    with client.application.test_request_context():
+        url = url_for("serial_processor", serial_w_id="00010000", actor="7793397000007")
+
+    response = client.get(url)
+    assert response.status_code == 200
