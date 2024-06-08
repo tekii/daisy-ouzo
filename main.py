@@ -109,7 +109,7 @@ def lookup_event(movimiento=None, file=None):
 
 @app.route("/serialProcessor/<string:serial_w_id>")
 def serial_processor(serial_w_id):
-    _logger.debug("/tuteur/%s", serial_w_id)
+    _logger.debug("/serialProcessor/%s", serial_w_id)
     actor = request.args.get("actor", type=str)
     batch = request.args.get("batch", type=str)
     lab = request.args.get("lab", type=str)
