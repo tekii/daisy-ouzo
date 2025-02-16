@@ -1,6 +1,7 @@
 """THE PARTY CATALOG"""
 
 import logging
+from google.auth import default as default_credentials
 from google.oauth2 import service_account
 from google.cloud import bigquery
 
@@ -20,13 +21,8 @@ class ThePartyCatalog(object):
 
     def __init__(self):
         if not self._is_already_configured:
-            # TODO: use the default credentials?
-            credentials_file = "../.secrets/mock_credentials.json"
-            credentials = service_account.Credentials.from_service_account_file(
-                credentials_file, scopes=["https://www.googleapis.com/auth/cloud-platform"]
-            )
             #
-            self._project_id = credentials.project_id
+            credentials, self._project_id = default_credentials(scopes=["https://www.googleapis.com/auth/cloud-platform"])
             self._client = bigquery.Client(credentials=credentials, project=self._project_id)
             #
             self._cache = {}

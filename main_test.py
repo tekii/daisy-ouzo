@@ -4,6 +4,24 @@ import pytest
 from typing import Any
 from flask import url_for
 
+import google.auth
+from google.oauth2 import service_account
+
+
+def _default(scopes: Any | None = ["https://www.googleapis.com/auth/cloud-platform"]):
+    """Replaces the current default credentials w/ de test-runner ones."""
+    credentials = service_account.Credentials.from_service_account_file(
+        "../.secrets/mock_credentials.json",
+        scopes=scopes,
+    )
+    return credentials, "daisy-dev01"
+
+
+@pytest.fixture(autouse=False)
+def test_runner_service_account_credentials(monkeypatch):
+    # replace curent default w/ the service account JWT
+    monkeypatch.setattr(google.auth, "default", _default)
+
 
 @pytest.fixture()
 def client():
@@ -21,7 +39,7 @@ def client():
     delattr(the_catalog.__class__, "_the_instance")
 
 
-def test_01(client):
+def test_01(test_runner_service_account_credentials, client):
 
     with client.application.test_request_context():
         url_1 = url_for("lookup_gln", gln="")
@@ -34,7 +52,7 @@ def test_01(client):
     assert response.status_code == 400
 
 
-def test_02(client):
+def test_02(test_runner_service_account_credentials, client):
 
     with client.application.test_request_context():
         url = url_for("lookup_gln", gln="7798165540006")
@@ -48,7 +66,7 @@ def test_02(client):
     assert response.data == b'{"cuit":"30710261551","gln":"7798165540006","idTipoAgente":4,"nombreTipoAgente":"DROGUERIA"}\n'
 
 
-def test_03(client):
+def test_03(test_runner_service_account_credentials, client):
 
     with client.application.test_request_context():
         url_1 = url_for("lookup_gln", gln="8888888888888")
