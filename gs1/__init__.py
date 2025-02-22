@@ -35,7 +35,7 @@ class _Base:
 
 class GTIN(_Base):
 
-    RE = re.compile("^(\d?\d{12})(\d)$")
+    RE = re.compile(r"^(\d?\d{12})(\d)$")
 
     def __init__(self, digits) -> None:
         super().__init__(digits)
@@ -46,7 +46,7 @@ class GTIN(_Base):
 
 class GLN(_Base):
 
-    RE = re.compile("^(\d{12})(\d)$")
+    RE = re.compile(r"^(\d{12})(\d)$")
 
     def __init__(self, digits) -> None:
         super().__init__(digits)
