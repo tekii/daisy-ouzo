@@ -1,13 +1,2 @@
-.gcloudignore
-.dockerignore
-*_test.*
-venv
-*.sh
-README.md
-notes.txt
-conftest.py
-*.service
-*.target
-
-.gitignore
+#!include:.dockerignore
 #!include:.gitignore

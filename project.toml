@@ -1,0 +1,43 @@
+[_]
+schema-version = "0.2"
+id = "tekii.margot.ouzo"
+name = "Ouzo Service"
+version = "1.0.0"
+
+[io.buildpacks]
+builder = "gcr.io/buildpacks/builder:latest"
+exclude = [
+    "project.toml",
+    "/README.md",
+    ".vscode",
+    ".attic",
+    
+    "*.pyc",
+    "*.pyo",
+    "*.pyd",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    "venv**",
+    
+    ".secrets",
+    "secrets.json",
+
+    ".gcloudignore",
+    ".dockerignore",
+    ".gitignore",
+    ".aiexclude",
+    
+    "Dockerfile",
+    
+    "*.sh",
+    
+    "notes.txt",
+    
+    "*_test.*",
+    "conftest.py",
+    
+    "*.service",
+    "*.target"
+]
+
