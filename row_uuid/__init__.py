@@ -18,9 +18,9 @@ def calculate(actor, row, encoded_path):
         date, time, name = path.parts[-3:]
         datetime.strptime(date + time, "%Y%m%d%H%M")
         stem = actor + name + date + time + str(row)
-        hash = md5()
-        hash.update(stem.encode("utf-8"))
-        return hash.hexdigest()
+        hash_ = md5()
+        hash_.update(stem.encode("utf-8"))
+        return hash_.hexdigest()
 
     except Exception as e:
         raise TkError(
@@ -31,4 +31,4 @@ def calculate(actor, row, encoded_path):
                 "valores": [actor, row, date, time, name],
                 "message": [str(e)],
             },
-        )
+        ) from e

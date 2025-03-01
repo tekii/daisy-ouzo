@@ -1,12 +1,12 @@
-import logging.handlers
 import os
 import re
 from datetime import datetime, timezone
 import logging
+import logging.handlers
 
 from flask import Flask, request, abort, jsonify
 import gs1
-from party_catalog import *
+from party_catalog import ThePartyCatalog
 from event_lookup import event_lookup
 from tkerror import TkError
 import row_uuid
@@ -34,7 +34,7 @@ def handle_500(e):
 
 
 @app.errorhandler(404)
-def handle_404(e):
+def handle_404(_):
     # error = str(e)
     error = f"URL {request.path} not found."
     _logger.error(error)

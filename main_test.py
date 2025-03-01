@@ -1,7 +1,7 @@
 import json
 import pathlib
-import pytest
 from typing import Any
+import pytest
 from flask import url_for
 
 import google.auth
