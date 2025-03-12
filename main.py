@@ -87,15 +87,24 @@ def lookup_gtin(gtin=None):
         valid_gtin = gs1.GTIN(gtin)
         valid_gtin.verify()
 
-    except ValueError:
-        _logger.error("gtin %s invalid.", gtin)
-        error = {
-            "errorType": "MARGARITA",
-            "errorCode": 4003,
-            "errorArgs": {"gtin": [gtin], "origen": ["TradeItemLookup"], "message": ["Some error message."]},
-            "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
-        }
-        return jsonify(error), 400
+    except ValueError as e:
+        # _logger.error("gtin %s invalid.", gtin)
+        # error = {
+        #    "errorType": "MARGARITA",
+        #    "errorCode": 4003,
+        #    "errorArgs": {"gtin": [gtin], "origen": ["TradeItemLookup"], "message": ["Some error message."]},
+        #    "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
+        # }
+        # return jsonify(error), 400
+
+        raise TkError(
+            errorCode=TkError.MAR.GTIN_FORMATO_INVALIDO,
+            errorArgs={
+                "gtin": [gtin],
+                "origen": ["TradeItemLookup"],
+                "message": ["Invalid GTIN format."],
+            },
+        ) from e
 
     return jsonify({"gtin": str(valid_gtin)})
 

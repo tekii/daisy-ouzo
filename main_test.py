@@ -75,7 +75,7 @@ def test_03(test_runner_service_account_credentials, client):
     assert response.status_code == 404
 
 
-def test_04(client):
+def test_04_lookup_gtin(client):
 
     with client.application.test_request_context():
         url = url_for("lookup_gtin", gtin="7793397051573")
@@ -83,6 +83,19 @@ def test_04(client):
     response = client.get(url)
     assert response.status_code == 200
     assert response.data == b'{"gtin":"07793397051573"}\n'
+
+
+def test_04_lookup_gtin_MARGARITA_4003(client):
+
+    with client.application.test_request_context():
+        url = url_for("lookup_gtin", gtin="7793397051570")
+
+    response = client.get(url)
+    assert response.status_code == 400
+    errors = json.loads(response.data)
+    assert len(errors) == 1
+    assert errors[0]["errorType"] == "MARGARITA"
+    assert errors[0]["errorCode"] == 4003
 
 
 def test_05(client):
