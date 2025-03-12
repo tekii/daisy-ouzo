@@ -10,10 +10,10 @@ def event_lookup(movimiento, file):
         raise TkError(
             errorCode=TkError.MAR.SERVICIO_FALTAN_ARGUMENTOS,
             errorArgs={
-                "origen": ["EventLookup"],
+                "origen": ["event-lookup-service"],
                 "argumentos": ["actor", "file"],
                 "valores": ["TUTEUR", file],
-                "message": ["Some error message."],
+                "mandatorios": ["movimiento"],
             },
         )
 
@@ -70,17 +70,22 @@ def event_lookup(movimiento, file):
         case 28:
             raise TkError(
                 errorCode=TkError.MAR.EVENTO_NO_INFORMABLE,
-                errorArgs={"origen": [__name__], "argumentos": ["actor", "motivo"], "valores": ["TUTEUR", movimiento]},
+                errorArgs={
+                    "origen": ["event-lookup-service"],
+                    "actor": ["TUTEUR"],
+                    "motivo": ["movimiento", movimiento],
+                },
             )
 
         case _:
             raise TkError(
                 errorCode=TkError.MAR.SERVICIO_RESULTADO_VACIO,
                 errorArgs={
-                    "origen": [__name__],
+                    "origen": ["event-lookup-service"],
                     "argumentos": ["actor", "file"],
                     "valores": ["TUTEUR", file],
                     "mensaje": ["No se reconoce el movimiento"],
+                    "movimiento": [movimiento],
                 },
             )
 

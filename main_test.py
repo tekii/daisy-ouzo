@@ -95,14 +95,55 @@ def test_05(client):
     # assert response.data == b'{"gtin":"07793397051573"}\n'
 
 
-def test_06(client):
+@pytest.mark.skip("the url can´t be built")
+def test_06_lookup_event_MARGARITA_6001(client):
+
+    with client.application.test_request_context():
+        url = url_for("lookup_event", movimiento="", file="TUTEUR0000.TXT")
+
+    response = client.get(url)
+    assert response.status_code == 400
+    errors = json.loads(response.data)
+    assert len(errors) == 1
+    assert errors[0]["errorType"] == "MARGARITA"
+    assert errors[0]["errorCode"] == 6001
+    assert errors[0]["errorArgs"]["origen"] == ["event-lookup-service"]
+    assert errors[0]["errorArgs"]["argumentos"] == ["actor", "file"]
+    assert errors[0]["errorArgs"]["valores"] == ["TUTEUR", "TUTEUR0000.TXT"]
+    assert errors[0]["errorArgs"]["mandatorios"] == ["movimiento"]
+
+
+def test_06_lookup_event_MARGARITA_6002(client):
 
     with client.application.test_request_context():
         url = url_for("lookup_event", movimiento="00", file="TUTEUR0000.TXT")
 
     response = client.get(url)
     assert response.status_code == 400
-    # assert response.data == b'{"gtin":"07793397051573"}\n'
+    errors = json.loads(response.data)
+    assert len(errors) == 1
+    assert errors[0]["errorType"] == "MARGARITA"
+    assert errors[0]["errorCode"] == 6002
+    assert errors[0]["errorArgs"]["origen"] == ["event-lookup-service"]
+    assert errors[0]["errorArgs"]["argumentos"] == ["actor", "file"]
+    assert errors[0]["errorArgs"]["valores"] == ["TUTEUR", "TUTEUR0000.TXT"]
+    assert errors[0]["errorArgs"]["movimiento"] == ["00"]
+
+
+def test_06_lookup_event_MARGARITA_7001(client):
+
+    with client.application.test_request_context():
+        url = url_for("lookup_event", movimiento="28", file="TUTEUR0000.TXT")
+
+    response = client.get(url)
+    assert response.status_code == 400
+    errors = json.loads(response.data)
+    assert len(errors) == 1
+    assert errors[0]["errorType"] == "MARGARITA"
+    assert errors[0]["errorCode"] == 7001
+    assert errors[0]["errorArgs"]["origen"] == ["event-lookup-service"]
+    assert errors[0]["errorArgs"]["actor"] == ["TUTEUR"]
+    assert errors[0]["errorArgs"]["motivo"] == ["movimiento", "28"]
 
 
 def test_07(client):
