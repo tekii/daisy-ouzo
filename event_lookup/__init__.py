@@ -49,6 +49,9 @@ def event_lookup(movimiento, file):
         case 35 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 40 | 5:
             evento_id = TYPE.PUESTA_EN_CONTRAMUESTRA_DE_RETENCION
 
+        case 51:
+            evento_id = TYPE.PUESTA_EN_CONTROL_DE_CALIDAD
+
         case 11:
             evento_id = TYPE.DESTRUCCION_DE_MEDICAMENTO_POR_VENCIMIENTO
 
