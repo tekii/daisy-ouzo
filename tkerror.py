@@ -16,6 +16,7 @@ class TkError(Exception):
         EVENTO_NO_INFORMABLE = 7001
         SERIAL_PROCESSOR_PARSE_ERROR = 7003
 
-    def __init__(self, errorCode, errorArgs):
+    def __init__(self, errorCode, errorArgs, code=400):
         self.errorCode = errorCode
         self.erroArgs = errorArgs
+        self.code = code

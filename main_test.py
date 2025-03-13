@@ -39,20 +39,25 @@ def client():
     delattr(the_catalog.__class__, "_the_instance")
 
 
-def test_01(test_runner_service_account_credentials, client):
+def test_lookup_gln_01(test_runner_service_account_credentials, client):
 
     with client.application.test_request_context():
         url_1 = url_for("lookup_gln", gln="")
         url_2 = url_for("lookup_gln", gln="0")
 
     response = client.get(url_1)
-    assert response.status_code == 404
+    assert response.status_code == 400
+    errors = json.loads(response.data)
+    assert errors[0]["errorType"] == "MARGARITA"
+    assert errors[0]["errorCode"] == 4002
 
     response = client.get(url_2)
     assert response.status_code == 400
+    assert errors[0]["errorType"] == "MARGARITA"
+    assert errors[0]["errorCode"] == 4002
 
 
-def test_02(test_runner_service_account_credentials, client):
+def test_lookup_gln_02(test_runner_service_account_credentials, client):
 
     with client.application.test_request_context():
         url = url_for("lookup_gln", gln="7798165540006")

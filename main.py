@@ -57,7 +57,7 @@ def handle_tkerror(e):
         "errorArgs": e.erroArgs,
         "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
     }
-    return jsonify([error]), 400
+    return jsonify([error]), e.code
 
 
 _gln_pattern = re.compile("[0-9]{13,14}")
@@ -70,12 +70,19 @@ _catalog = ThePartyCatalog()
 def lookup_gln(gln=None, cuit=None):
 
     if gln is None or _gln_pattern.fullmatch(gln) is None:
-        abort(400, f"{gln} is either undefined or malformed GLN resource")
+        raise TkError(
+            errorCode=TkError.MAR.GLN_FORMATO_INVALIDO,
+            errorArgs={
+                "gln": [gln],
+                "origen": ["PartyLookup"],
+                "message": [f"-{gln}- is either undefined or malformed GLN resource"],
+            },
+        )
 
     result = _catalog.lookup(gln)
 
     if result is None:
-        abort(404, f"GLN {gln} not found.")
+        abort(404, f"GLN -{gln}- Not Found.")
 
     return jsonify(result)
 
@@ -88,15 +95,6 @@ def lookup_gtin(gtin=None):
         valid_gtin.verify()
 
     except ValueError as e:
-        # _logger.error("gtin %s invalid.", gtin)
-        # error = {
-        #    "errorType": "MARGARITA",
-        #    "errorCode": 4003,
-        #    "errorArgs": {"gtin": [gtin], "origen": ["TradeItemLookup"], "message": ["Some error message."]},
-        #    "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
-        # }
-        # return jsonify(error), 400
-
         raise TkError(
             errorCode=TkError.MAR.GTIN_FORMATO_INVALIDO,
             errorArgs={
