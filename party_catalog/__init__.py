@@ -2,12 +2,16 @@
 
 import logging
 from google.auth import default as default_credentials
-from google.oauth2 import service_account
+
 from google.cloud import bigquery
 
 __all__ = ["ThePartyCatalog"]
 
 _logger = logging.getLogger(__name__)
+
+
+class MultipleResults(Exception):
+    msg: str
 
 
 class ThePartyCatalog(object):
@@ -22,7 +26,9 @@ class ThePartyCatalog(object):
     def __init__(self):
         if not self._is_already_configured:
             #
-            credentials, self._project_id = default_credentials(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+            credentials, self._project_id = default_credentials(
+                scopes=["https://www.googleapis.com/auth/cloud-platform"],
+            )
             self._client = bigquery.Client(credentials=credentials, project=self._project_id)
             #
             self._cache = {}
@@ -32,16 +38,28 @@ class ThePartyCatalog(object):
     def __getitem__(self, key: str):
         return self.lookup(key)
 
-    def lookup(self, gln: str):
+    def lookup(self, gln: str, cuit: str):
 
         item = self._cache.get(gln)
 
         if item is None:
 
-            _logger.info(msg=f"Cache MISS {gln}")
+            _logger.info(msg=f"PartyLookup - Cache MISS -{gln}-{cuit}-")
 
-            query = f"""SELECT gln, cuit, id_tipo_agente, nombre_tipo_agente FROM `{self._project_id}.orange.catalogo_electronico_by_gln` WHERE gln = @gln LIMIT 1000;"""
-            job_config = bigquery.QueryJobConfig(query_parameters=[bigquery.ScalarQueryParameter("gln", "STRING", gln)])
+            query = f"""
+            SELECT gln, cuit, id_tipo_agente, nombre_tipo_agente FROM `{self._project_id}.orange.catalogo_electronico_by_gln` WHERE 
+            CASE 
+              WHEN @gln IS NOT NULL AND @cuit IS NOT NULL THEN gln = @gln AND cuit = @cuit 
+              WHEN @gln IS NOT NULL AND @cuit IS NULL THEN gln = @gln 
+              WHEN @gln IS NULL AND @cuit IS NOT NULL THEN cuit = @cuit 
+              ELSE FALSE
+            END LIMIT 10;"""
+            job_config = bigquery.QueryJobConfig(
+                query_parameters=[
+                    bigquery.ScalarQueryParameter("gln", "STRING", gln),
+                    bigquery.ScalarQueryParameter("cuit", "STRING", cuit),
+                ]
+            )
             results = self._client.query_and_wait(query, job_config=job_config)  # Make an API request.
 
             n = results.total_rows
@@ -50,7 +68,10 @@ class ThePartyCatalog(object):
                 return None
 
             if n > 1:
-                _logger.warning(msg=f"Query return {n} results.")
+                e = MultipleResults()
+                e.msg = f"PartyLookup -{gln}-{cuit}- returns multiple ({n}) results"
+                raise e
+                # _logger.warning(msg=f"Query return {n} results.")
 
             row = next(results)
 
@@ -60,9 +81,9 @@ class ThePartyCatalog(object):
 
             item["cached"] = False
 
-            _logger.debug("Cache SIZE %i", len(self._cache))
+            _logger.debug(msg=f"PartyLookup - Cache SIZE -{len(self._cache)}")
         else:
-            _logger.debug(msg=f"Cache HIT {gln}")
+            _logger.debug(msg=f"PartyLookup - Cache HIT -{gln}-")
 
         return item
 

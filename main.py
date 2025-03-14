@@ -6,7 +6,7 @@ import logging.handlers
 
 from flask import Flask, request, abort, jsonify
 import gs1
-from party_catalog import ThePartyCatalog
+from party_catalog import ThePartyCatalog, MultipleResults
 from event_lookup import event_lookup
 from tkerror import TkError
 import row_uuid
@@ -14,7 +14,7 @@ import symbol_processor
 
 app = Flask(__name__)
 
-_logger = logging.getLogger("ouzo")
+_logger = logging.getLogger("OUZO")
 
 if __name__ != "__main__" and __name__ != "__test__":
     gunicorn_error_logger = logging.getLogger("gunicorn.error")
@@ -50,39 +50,77 @@ def handle_400(e):
 
 @app.errorhandler(TkError)
 def handle_tkerror(e):
-    _logger.error(msg=f"MARGARITA-{e.errorCode}")
+    # _logger.error(msg=f"MARGARITA-{e.errorCode}")
+    msg = e.errorArgs["message"] if "message" in e.errorArgs else "No message"
+    _logger.log(level=e.level, msg=f"MARGARITA-{e.errorCode} - {msg}")
     error = {
         "errorType": "MARGARITA",
         "errorCode": e.errorCode,
-        "errorArgs": e.erroArgs,
+        "errorArgs": e.errorArgs,
         "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
     }
     return jsonify([error]), e.code
 
 
-_gln_pattern = re.compile("[0-9]{13,14}")
-
+_cuit_pattern = re.compile(r"[0-9]{11}")
 _catalog = ThePartyCatalog()
 
 
 @app.route("/search/<gln>/<cuit>")
-@app.route("/gln/<gln>")
-def lookup_gln(gln=None, cuit=None):
+@app.route("/search/<gln>/null")
+@app.route("/search/null/<cuit>")
+@app.route("/search/null/null")
+def party_lookup(gln=None, cuit=None):
 
-    if gln is None or _gln_pattern.fullmatch(gln) is None:
+    # if gln is not None and _gln_pattern.fullmatch(gln) is None:
+    if gln is not None:
+        try:
+            valid_gln = gs1.GLN(gln)
+            valid_gln.verify()
+        except ValueError as e:
+            raise TkError(
+                errorCode=TkError.MAR.GLN_FORMATO_INVALIDO,
+                errorArgs={
+                    "gln": [gln],
+                    "origen": ["PartyLookup"],
+                    "message": [f"PartyLookup -{gln}- is either invalid or malformed GLN resource"],
+                },
+            ) from e
+
+    if cuit is not None and _cuit_pattern.fullmatch(cuit) is None:
         raise TkError(
-            errorCode=TkError.MAR.GLN_FORMATO_INVALIDO,
+            errorCode=TkError.MAR.CUIT_FORMATO_INVALIDO,
             errorArgs={
-                "gln": [gln],
+                "cuit": [cuit],
                 "origen": ["PartyLookup"],
-                "message": [f"-{gln}- is either undefined or malformed GLN resource"],
+                "message": [f"PartyLookup -{cuit}- is either invalid or malformed CUIT resource"],
             },
         )
 
-    result = _catalog.lookup(gln)
+    try:
+
+        result = _catalog.lookup(gln=gln, cuit=cuit) if gln is not None or cuit is not None else None
+
+    except MultipleResults as e:
+        raise TkError(
+            errorCode=TkError.MAR.RESULTADOS_MULTIPLES,
+            errorArgs={
+                "origen": ["PartyLookup"],
+                "message": [e.msg],
+            },
+        ) from e
 
     if result is None:
-        abort(404, f"GLN -{gln}- Not Found.")
+        # abort(404, f"PartyLookup -{gln}-{cuit}- Not Found in PartyCatalog")
+        raise TkError(
+            errorCode=TkError.MAR.ERROR_NULO,
+            errorArgs={
+                "origen": ["PartyLookup"],
+                "message": [f"PartyLookup -{gln}-{cuit}- Not Found in PartyCatalog"],
+            },
+            code=404,
+            level=logging.ERROR,
+        )
 
     return jsonify(result)
 
@@ -100,8 +138,9 @@ def lookup_gtin(gtin=None):
             errorArgs={
                 "gtin": [gtin],
                 "origen": ["TradeItemLookup"],
-                "message": ["Invalid GTIN format."],
+                "message": [f"TradeItemLookup -{gtin}- id invalid or malformed GTIN resource"],
             },
+            level=logging.WARNING,
         ) from e
 
     return jsonify({"gtin": str(valid_gtin)})
