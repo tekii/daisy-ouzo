@@ -15,8 +15,10 @@ def calculate(actor, row, encoded_path):
     try:
         unquoted = unquote(encoded_path, encoding="utf-8")
         path = Path(unquoted)
-        date, time, name = path.parts[-3:]
-        datetime.strptime(date + time, "%Y%m%d%H%M")
+        a, b, c, d = path.parts[-4:]
+        date, time, name = (a, b, d) if c == "corrected" else (b, c, d)
+        # date, time, _, name = path.parts[-4:]
+        datetime.strptime(date + time, "%Y%m%d%H%M")  # this validates the datetime or blows
         stem = actor + name + date + time + str(row)
         hash_ = md5()
         hash_.update(stem.encode("utf-8"))
@@ -24,7 +26,7 @@ def calculate(actor, row, encoded_path):
 
     except Exception as e:
         raise TkError(
-            errorCode=TkError.MAR.ERROR_NULO,
+            errorCode=TkError.MAR.SERVICIO_FALTAN_ARGUMENTOS,
             errorArgs={
                 "origen": [__name__],
                 "argumentos": ["actor", "row", "date", "time", "name"],

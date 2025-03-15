@@ -87,20 +87,32 @@ def test_06_lookup_event_MARGARITA_7001(client):
     assert errors[0]["errorArgs"]["motivo"] == ["movimiento", "28"]
 
 
-def test_07(client):
+def test_calculate_rowid_a_1(client):
 
     with client.application.test_request_context():
         url = url_for(
-            "calculate_rowid",
-            actor="7793397000007",
+            "calculate_rowid_a",
             row="1",
-            encoded_path="mnt%2Faux%2Fdfs%2Fmails%2Fafms%2F20120816%2F1200%2Fremitos.csv",
+            encoded_path="%2Fmnt%2Faux%2Fdfs%2Fmails%2Fafms%2F20120816%2F1200%2Fremitos.csv",
         )
 
-    # url = "/7793397000007/1/mnt%2Faux%2Fdfs%2Fmails%2Fafms%2F20120816%2F1200%2Fremitos.csv"
     response = client.get(url)
     assert response.status_code == 200
     assert response.data == b"fcbdda10f1e63863ae0c52345b626009"
+
+
+def test_calculate_rowid_a_2(client):
+
+    with client.application.test_request_context():
+        url = url_for(
+            "calculate_rowid_a",
+            row="109",
+            encoded_path="%2Fmnt%2Fv1%2Ftemp%2Ftuteur%2F4a4355d400f611f08890dbe26f81d24d%2F20241012%2F1232%2Fcorrected%2FTUTEUR1210241232.TXT",
+        )
+
+    response = client.get(url)
+    assert response.status_code == 200
+    assert response.data == b"a4ca3d5a1c9a0ce2722af147efbea6f7"
 
 
 def test_08(client):

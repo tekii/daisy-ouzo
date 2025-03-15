@@ -153,10 +153,17 @@ def serial_processor(serial_w_id):
     return jsonify(result)
 
 
-@app.route("/<string:actor>/<int:row>/<path:encoded_path>")
-def calculate_rowid(actor, row, encoded_path):
-    _logger.debug("/%s/%d/%s", actor, row, encoded_path)
-    result = row_uuid.calculate(actor, row, encoded_path)
+@app.route("/7793397000007/<int:row>/<path:encoded_path>")
+def calculate_rowid_a(row, encoded_path):
+    _logger.debug(msg=f"/7793397000007/{row}/{encoded_path}")
+    result = row_uuid.calculate(actor="7793397000007", row=row, encoded_path=encoded_path)
+    return result, 200
+
+
+@app.route("/7798175150202/<int:row>/<path:encoded_path>")
+def calculate_rowid_b(row, encoded_path):
+    _logger.debug(msg=f"/7798175150202/{row}/{encoded_path}")
+    result = row_uuid.calculate("7798175150202", row, encoded_path)
     return result, 200
 
 
