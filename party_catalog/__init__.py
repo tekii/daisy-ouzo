@@ -2,16 +2,12 @@
 
 import logging
 from google.auth import default as default_credentials
-
 from google.cloud import bigquery
+from tkerror import TkError
 
 __all__ = ["ThePartyCatalog"]
 
 _logger = logging.getLogger(__name__)
-
-
-class MultipleResults(Exception):
-    msg: str
 
 
 class ThePartyCatalog(object):
@@ -68,9 +64,14 @@ class ThePartyCatalog(object):
                 return None
 
             if n > 1:
-                e = MultipleResults()
-                e.msg = f"PartyLookup -{gln}-{cuit}- returns multiple ({n}) results"
-                raise e
+                raise TkError(
+                    errorCode=TkError.MAR.RESULTADOS_MULTIPLES,
+                    errorArgs={
+                        "origen": ["PartyLookup"],
+                        "message": [f"PartyLookup -{gln}-{cuit}- returns multiple ({n}) results"],
+                    },
+                )
+
                 # _logger.warning(msg=f"Query return {n} results.")
 
             row = next(results)

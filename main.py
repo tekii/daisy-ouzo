@@ -5,10 +5,10 @@ import logging
 import logging.handlers
 
 from flask import Flask, request, abort, jsonify
-import gs1
-from party_catalog import ThePartyCatalog, MultipleResults
-from event_lookup import event_lookup
 from tkerror import TkError
+import gs1
+from party_catalog import ThePartyCatalog
+from event_lookup import event_lookup
 import row_uuid
 import symbol_processor
 
@@ -97,18 +97,7 @@ def party_lookup(gln=None, cuit=None):
             },
         )
 
-    try:
-
-        result = _catalog.lookup(gln=gln, cuit=cuit) if gln is not None or cuit is not None else None
-
-    except MultipleResults as e:
-        raise TkError(
-            errorCode=TkError.MAR.RESULTADOS_MULTIPLES,
-            errorArgs={
-                "origen": ["PartyLookup"],
-                "message": [e.msg],
-            },
-        ) from e
+    result = _catalog.lookup(gln=gln, cuit=cuit) if gln is not None or cuit is not None else None
 
     if result is None:
         # abort(404, f"PartyLookup -{gln}-{cuit}- Not Found in PartyCatalog")
