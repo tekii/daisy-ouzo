@@ -29,8 +29,9 @@ def calculate(actor, row, encoded_path):
             errorCode=TkError.MAR.SERVICIO_FALTAN_ARGUMENTOS,
             errorArgs={
                 "origen": [__name__],
+                "Errors": ["020", "030", "040"],
                 "argumentos": ["actor", "row", "date", "time", "name"],
                 "valores": [actor, row, date, time, name],
-                "message": [str(e)],
+                "message": ["Some message"],
             },
         ) from e
