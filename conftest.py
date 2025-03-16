@@ -8,7 +8,7 @@ from google.oauth2 import service_account
 def _default(scopes: Any | None = ["https://www.googleapis.com/auth/cloud-platform"]):
     """Replaces the current default credentials w/ de test-runner ones."""
     credentials = service_account.Credentials.from_service_account_file(
-        "../.secrets/mock_credentials.json",
+        "../.secrets/test-runner-credentials.json",
         scopes=scopes,
     )
     # TODO: get the project id from somewhere, the account file is a possible source.
