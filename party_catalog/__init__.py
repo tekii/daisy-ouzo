@@ -7,7 +7,7 @@ from tkerror import TkError
 
 __all__ = ["ThePartyCatalog"]
 
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger("ouzo")
 
 
 class ThePartyCatalog(object):

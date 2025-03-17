@@ -1,10 +1,13 @@
+import logging.handlers
 import os
 import re
 from datetime import datetime, timezone
 import logging
+
 import logging.handlers
 
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, jsonify
+
 from tkerror import TkError
 import gs1
 from party_catalog import ThePartyCatalog
@@ -12,18 +15,20 @@ from event_lookup import event_lookup
 import row_uuid
 import symbol_processor
 
-app = Flask(__name__)
-
-_logger = logging.getLogger("OUZO")
 
 if __name__ != "__main__" and __name__ != "__test__":
-    gunicorn_error_logger = logging.getLogger("gunicorn.error")
-    logging.basicConfig(level=gunicorn_error_logger.getEffectiveLevel(), handlers=gunicorn_error_logger.handlers)
-    app.logger.setLevel(gunicorn_error_logger.getEffectiveLevel())
-    app.logger.handlers = gunicorn_error_logger.handlers
-else:
-    logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
-    # logging.handlers = app.logger.handlers
+    import google.cloud.logging
+
+    labels = {"margot_service": "ouzo"}
+    logging_client = google.cloud.logging.Client()
+    logging_client.setup_logging(labels=labels)
+    # gunicorn_error_logger = logging.getLogger("gunicorn.error")
+    # level = gunicorn_error_logger.getEffectiveLevel()
+
+
+app = Flask(__name__)  # the app is declare after the logger is setup
+
+_logger = logging.getLogger("ouzo")
 
 
 @app.errorhandler(500)
@@ -50,15 +55,20 @@ def handle_400(e):
 
 @app.errorhandler(TkError)
 def handle_tkerror(e):
-    # _logger.error(msg=f"MARGARITA-{e.errorCode}")
-    msg = e.errorArgs["message"] if "message" in e.errorArgs else "No message"
-    _logger.log(level=e.level, msg=f"MARGARITA-{e.errorCode} - {msg}")
+
+    msg = e.errorArgs["message"][0] if "message" in e.errorArgs else "No message"
     error = {
         "errorType": "MARGARITA",
         "errorCode": e.errorCode,
         "errorArgs": e.errorArgs,
         "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
     }
+    labels = {"margarita_code": f"{e.errorCode}"}
+    _logger.log(
+        level=e.level,
+        msg=msg,
+        extra={"labels": labels},
+    )
     return jsonify([error]), e.code
 
 
@@ -85,6 +95,7 @@ def party_lookup(gln=None, cuit=None):
                     "origen": ["PartyLookup"],
                     "message": [f"PartyLookup -{gln}- is either invalid or malformed GLN resource"],
                 },
+                level=logging.WARNING,
             ) from e
 
     if cuit is not None and _cuit_pattern.fullmatch(cuit) is None:
@@ -95,12 +106,12 @@ def party_lookup(gln=None, cuit=None):
                 "origen": ["PartyLookup"],
                 "message": [f"PartyLookup -{cuit}- is either invalid or malformed CUIT resource"],
             },
+            level=logging.WARNING,
         )
 
     result = _catalog.lookup(gln=gln, cuit=cuit) if gln is not None or cuit is not None else None
 
     if result is None:
-        # abort(404, f"PartyLookup -{gln}-{cuit}- Not Found in PartyCatalog")
         raise TkError(
             errorCode=TkError.MAR.ERROR_NULO,
             errorArgs={
@@ -108,7 +119,7 @@ def party_lookup(gln=None, cuit=None):
                 "message": [f"PartyLookup -{gln}-{cuit}- Not Found in PartyCatalog"],
             },
             code=404,
-            level=logging.ERROR,
+            level=logging.INFO,
         )
 
     return jsonify(result)
