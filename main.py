@@ -1,9 +1,8 @@
-import logging.handlers
 import os
 import re
 from datetime import datetime, timezone
 import logging
-import logging.handlers
+
 
 from flask import Flask, request, jsonify
 from werkzeug.routing import PathConverter
@@ -28,12 +27,10 @@ if __name__ != "__main__" and __name__ != "__test__":
 
 app = Flask(__name__)  # the app is declare after the logger is setup
 
-_logger = logging.getLogger("ouzo")
-
 
 @app.errorhandler(500)
 def handle_500(e):
-    _logger.exception(msg=">>>>>>>>>", exc_info=e)
+    logging.exception(exc_info=e)
     error = str(e)
     return jsonify(error=error), 500
 
@@ -42,14 +39,14 @@ def handle_500(e):
 def handle_404(_):
     # error = str(e)
     error = f"URL {request.path} not found."
-    _logger.error(error)
+    logging.error(error)
     return jsonify(error=error), 404
 
 
 @app.errorhandler(400)
 def handle_400(e):
     error = str(e)
-    _logger.error(error)
+    logging.error(error)
     return jsonify(error=error), 400
 
 
@@ -64,10 +61,13 @@ def handle_tkerror(e):
         "errorTimeStamp": datetime.now(timezone.utc).isoformat(),
     }
     labels = {"margarita_code": f"{e.errorCode}"}
-    _logger.log(
+    logging.log(
         level=e.level,
         msg=msg,
-        extra={"labels": labels},
+        extra={
+            "labels": labels,
+            "json_fields": error,
+        },
     )
     return jsonify([error]), e.code
 
@@ -81,7 +81,7 @@ _catalog = ThePartyCatalog()
 @app.route("/search/null/<cuit>")
 @app.route("/search/null/null")
 def party_lookup(gln=None, cuit=None):
-    _logger.debug(msg=f"party_lookup  in: {gln} {cuit}")
+    logging.debug(msg=f"party_lookup  in: {gln} {cuit}")
 
     # if gln is not None and _gln_pattern.fullmatch(gln) is None:
     if gln is not None:
@@ -123,13 +123,13 @@ def party_lookup(gln=None, cuit=None):
             level=logging.INFO,
         )
 
-    _logger.debug(msg=f"party_lookup out: {result}")
+    logging.debug(msg=f"party_lookup out: {result}")
     return jsonify(result)
 
 
 @app.route("/gtin/<gtin>")
 def lookup_gtin(gtin=None):
-    _logger.debug(msg=f"gtin_lookup  in: {gtin}")
+    logging.debug(msg=f"gtin_lookup  in: {gtin}")
 
     try:
         valid_gtin = gs1.GTIN(gtin)
@@ -146,23 +146,23 @@ def lookup_gtin(gtin=None):
             level=logging.WARNING,
         ) from e
 
-    _logger.debug(msg=f"gtin_lookup out: {str(valid_gtin)}")
+    logging.debug(msg=f"gtin_lookup out: {str(valid_gtin)}")
     return jsonify({"gtin": str(valid_gtin)})
 
 
 @app.route("/tuteur/<movimiento>/<file>")
 def lookup_event(movimiento=None, file=None):
-    _logger.debug(f"lookup_event  in: {movimiento} {file}")
+    logging.debug(f"lookup_event  in: {movimiento} {file}")
 
     result = event_lookup(movimiento, file)
 
-    _logger.debug(f"lookup_event out: {result}")
+    logging.debug(f"lookup_event out: {result}")
     return jsonify(result)
 
 
 @app.route("/serialProcessor/<string:serial_w_id>")
 def serial_processor(serial_w_id):
-    _logger.debug(f"serial_processor  in: {serial_w_id}")
+    logging.debug(f"serial_processor  in: {serial_w_id}")
 
     actor = request.args.get("actor", type=str)
     batch = request.args.get("batch", type=str)
@@ -170,7 +170,7 @@ def serial_processor(serial_w_id):
     gtin = request.args.get("gtin", type=str)
     result = symbol_processor.parse(serial_w_id, actor, batch, lab, gtin)
 
-    _logger.debug(f"serial_processor out: {result}")
+    logging.debug(f"serial_processor out: {result}")
     return jsonify(result)
 
 
@@ -191,11 +191,11 @@ app.url_map.converters["everything"] = EverythingConverter
 
 @app.route("/<actors:actor>/<int:row>/<everything:encoded_path>")  # , merge_slashes=True)
 def calculate_rowid(actor, row, encoded_path):
-    _logger.debug(msg=f"row_uuid  in: {actor} {row} {encoded_path}")
+    logging.debug(msg=f"row_uuid  in: {actor} {row} {encoded_path}")
 
     result = row_uuid.calculate(actor=actor, row=row, encoded_path=encoded_path)
 
-    _logger.debug(msg=f"row_uuid out: {result}")
+    logging.debug(msg=f"row_uuid out: {result}")
     return result, 200
 
 

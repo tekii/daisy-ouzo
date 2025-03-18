@@ -7,8 +7,6 @@ from tkerror import TkError
 
 __all__ = ["ThePartyCatalog"]
 
-_logger = logging.getLogger("ouzo")
-
 
 class ThePartyCatalog(object):
 
@@ -40,7 +38,7 @@ class ThePartyCatalog(object):
 
         if item is None:
 
-            _logger.info(msg=f"PartyLookup - Cache MISS -{gln}-{cuit}-")
+            logging.info(msg=f"PartyLookup - Cache MISS -{gln}-{cuit}-")
 
             query = f"""
             SELECT gln, cuit, id_tipo_agente, nombre_tipo_agente FROM `{self._project_id}.orange.catalogo_electronico_by_gln` WHERE 
@@ -72,8 +70,6 @@ class ThePartyCatalog(object):
                     },
                 )
 
-                # _logger.warning(msg=f"Query return {n} results.")
-
             row = next(results)
 
             item = {"gln": row.gln, "cuit": row.cuit, "idTipoAgente": row.id_tipo_agente, "nombreTipoAgente": row.nombre_tipo_agente}
@@ -82,9 +78,9 @@ class ThePartyCatalog(object):
 
             item["cached"] = False
 
-            _logger.debug(msg=f"PartyLookup - Cache SIZE -{len(self._cache)}")
+            logging.debug(msg=f"PartyLookup - Cache SIZE -{len(self._cache)}")
         else:
-            _logger.debug(msg=f"PartyLookup - Cache HIT -{gln}-")
+            logging.debug(msg=f"PartyLookup - Cache HIT -{gln}-")
 
         return item
 
