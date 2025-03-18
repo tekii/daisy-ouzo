@@ -91,7 +91,8 @@ def test_calculate_rowid_a_1(client):
 
     with client.application.test_request_context():
         url = url_for(
-            "calculate_rowid_a",
+            "calculate_rowid",
+            actor="7793397000007",
             row="1",
             encoded_path="%2Fmnt%2Faux%2Fdfs%2Fmails%2Fafms%2F20120816%2F1200%2Fremitos.csv",
         )
@@ -105,7 +106,8 @@ def test_calculate_rowid_a_2(client):
 
     with client.application.test_request_context():
         url = url_for(
-            "calculate_rowid_a",
+            "calculate_rowid",
+            actor="7793397000007",
             row="109",
             encoded_path="%2Fmnt%2Fv1%2Ftemp%2Ftuteur%2F4a4355d400f611f08890dbe26f81d24d%2F20241012%2F1232%2Fcorrected%2FTUTEUR1210241232.TXT",
         )

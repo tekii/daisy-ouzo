@@ -3,10 +3,10 @@ import os
 import re
 from datetime import datetime, timezone
 import logging
-
 import logging.handlers
 
 from flask import Flask, request, jsonify
+from werkzeug.routing import PathConverter
 
 from tkerror import TkError
 import gs1
@@ -56,7 +56,7 @@ def handle_400(e):
 @app.errorhandler(TkError)
 def handle_tkerror(e):
 
-    msg = e.errorArgs["message"][0] if "message" in e.errorArgs else "No message"
+    msg = e.errorArgs["message"][0] if "message" in e.errorArgs else e.errorArgs["mensaje"][0] if "mensaje" in e.errorArgs else "No message"
     error = {
         "errorType": "MARGARITA",
         "errorCode": e.errorCode,
@@ -81,6 +81,7 @@ _catalog = ThePartyCatalog()
 @app.route("/search/null/<cuit>")
 @app.route("/search/null/null")
 def party_lookup(gln=None, cuit=None):
+    _logger.debug(msg=f"party_lookup  in: {gln} {cuit}")
 
     # if gln is not None and _gln_pattern.fullmatch(gln) is None:
     if gln is not None:
@@ -122,12 +123,14 @@ def party_lookup(gln=None, cuit=None):
             level=logging.INFO,
         )
 
+    _logger.debug(msg=f"party_lookup out: {result}")
     return jsonify(result)
 
 
 @app.route("/gtin/<gtin>")
 def lookup_gtin(gtin=None):
-    _logger.debug("/gtin/%s", gtin)
+    _logger.debug(msg=f"gtin_lookup  in: {gtin}")
+
     try:
         valid_gtin = gs1.GTIN(gtin)
         valid_gtin.verify()
@@ -143,43 +146,58 @@ def lookup_gtin(gtin=None):
             level=logging.WARNING,
         ) from e
 
+    _logger.debug(msg=f"gtin_lookup out: {str(valid_gtin)}")
     return jsonify({"gtin": str(valid_gtin)})
 
 
 @app.route("/tuteur/<movimiento>/<file>")
 def lookup_event(movimiento=None, file=None):
-    _logger.debug("/tuteur/%s/%s", movimiento, file)
+    _logger.debug(f"lookup_event  in: {movimiento} {file}")
+
     result = event_lookup(movimiento, file)
+
+    _logger.debug(f"lookup_event out: {result}")
     return jsonify(result)
 
 
 @app.route("/serialProcessor/<string:serial_w_id>")
 def serial_processor(serial_w_id):
-    _logger.debug("/serialProcessor/%s", serial_w_id)
+    _logger.debug(f"serial_processor  in: {serial_w_id}")
+
     actor = request.args.get("actor", type=str)
     batch = request.args.get("batch", type=str)
     lab = request.args.get("lab", type=str)
     gtin = request.args.get("gtin", type=str)
     result = symbol_processor.parse(serial_w_id, actor, batch, lab, gtin)
+
+    _logger.debug(f"serial_processor out: {result}")
     return jsonify(result)
 
 
-@app.route("/7793397000007/<int:row>/<path:encoded_path>")
-def calculate_rowid_a(row, encoded_path):
-    _logger.debug(msg=f"/7793397000007/{row}/{encoded_path}")
-    result = row_uuid.calculate(actor="7793397000007", row=row, encoded_path=encoded_path)
-    return result, 200
+class ActorsConverter(PathConverter):
+    regex = r"7793397000007|7798175150202"
+    part_isolating = False
+    # weight = 199
 
 
-@app.route("/7798175150202/<int:row>/<path:encoded_path>")
-def calculate_rowid_b(row, encoded_path):
-    _logger.debug(msg=f"/7798175150202/{row}/{encoded_path}")
-    result = row_uuid.calculate("7798175150202", row, encoded_path)
+class EverythingConverter(PathConverter):
+    regex = r".*?"
+    part_isolating = False
+
+
+app.url_map.converters["actors"] = ActorsConverter
+app.url_map.converters["everything"] = EverythingConverter
+
+
+@app.route("/<actors:actor>/<int:row>/<everything:encoded_path>")  # , merge_slashes=True)
+def calculate_rowid(actor, row, encoded_path):
+    _logger.debug(msg=f"row_uuid  in: {actor} {row} {encoded_path}")
+
+    result = row_uuid.calculate(actor=actor, row=row, encoded_path=encoded_path)
+
+    _logger.debug(msg=f"row_uuid out: {result}")
     return result, 200
 
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 12010)))
-
-elif __name__ == "__test__":
-    pass
