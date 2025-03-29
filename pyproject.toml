@@ -14,9 +14,6 @@ minversion = "7.0"
 addopts = [ "--cov=src", ]
 pythonpath = "src"
 testpaths = [ "tests", ]
-env = [
-    "GOOGLE_APPLICATION_CREDENTIALS=",
-]
 
 [tool.coverage.run]
 omit = ["tests/**"]
