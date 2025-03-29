@@ -1,0 +1,28 @@
+import pytest
+from event_lookup import lookup_event, TYPE
+
+
+def test_all_events_to_make_coverage_happy(client):
+
+    for evento_id, movimientos in [
+        (TYPE.DISTRIBUCION_DEL_PRODUCTO_A_UN_ESLABON_POSTERIOR, (7, 25)),
+        (TYPE.RECEPCION_DE_PRODUCTO_DESDE_UN_ESLABON_ANTERIOR, (24,)),
+        (TYPE.ENVIO_TRASLADO_ENTRE_DEPOSITOS_PROPIOS, (13,)),
+        (TYPE.ENVIO_DE_PRODUCTO_EN_CARACTER_DEVOLUCION, (31, 99)),
+        (TYPE.ENVIO_DE_PRODUCTO_EN_CARACTER_DEVOLUCION_POR_VENCIMIENTO, (65,)),
+        (TYPE.RECEPCION_DE_PRODUCTO_EN_CARACTER_DE_DEVOLUCION, (9, 59)),
+        (TYPE.MUESTRA_MEDICA, (6,)),
+        (TYPE.PRODUCTO_DESTINADO_A_EXPORTACION, (22,)),
+        (TYPE.PRODUCTO_DESTINADO_A_ENSAYO_CLINICO, (27, 49)),
+        (TYPE.PUESTA_EN_CONTRAMUESTRA_DE_RETENCION, (35, 42, 43, 44, 45, 46, 47, 48, 40, 5)),
+        (TYPE.PUESTA_EN_CONTROL_DE_CALIDAD, (51,)),
+        (TYPE.DESTRUCCION_DE_MEDICAMENTO_POR_VENCIMIENTO, (11,)),
+        (TYPE.LEVANTAMIENTO_DE_CUARENTENA, (2,)),
+        (TYPE.ENVIO_DE_MERCADERIA_EN_CARACTER_DE_CUARENTENA, (63,)),
+        (TYPE.PRODUCTO_ROBADO_EXTRAVIADO, (18,)),
+        (TYPE.CODIGO_DETERIORADO_DESTRUIDO, (20, 4, 16)),
+        (TYPE.RECEPCION_DE_PRODUCTO_EN_CARACTER_DE_DEVOLUCION_POR_VENCIMIENTO, (64,)),
+    ]:
+        for movimiento in movimientos:
+            event = lookup_event(movimiento=movimiento, file="TUTEUR0000.TXT")
+            assert event["id"] == evento_id

@@ -4,7 +4,7 @@ from tkerror import TkError
 from .event import TYPE, EVENTS
 
 
-def event_lookup(movimiento, file):
+def lookup_event(movimiento, file):
 
     if not movimiento:
         raise TkError(

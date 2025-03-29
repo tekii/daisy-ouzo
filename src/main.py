@@ -10,7 +10,7 @@ from werkzeug.routing import PathConverter
 from tkerror import TkError
 from tekii_margot_toolbox import gs1
 from party_catalog import ThePartyCatalog
-from event_lookup import event_lookup
+import event_lookup
 import row_uuid
 import symbol_processor
 
@@ -154,7 +154,7 @@ def lookup_gtin(gtin=None):
 def lookup_event(movimiento=None, file=None):
     logging.debug(f"lookup_event  in: {movimiento} {file}")
 
-    result = event_lookup(movimiento, file)
+    result = event_lookup.lookup_event(movimiento, file)
 
     logging.debug(f"lookup_event out: {result}")
     return jsonify(result)
