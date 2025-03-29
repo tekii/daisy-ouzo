@@ -25,7 +25,7 @@ def test_runner_service_account_credentials(monkeypatch):
 def client():
     from importlib.util import spec_from_file_location, module_from_spec
 
-    source = pathlib.Path(__file__).resolve().parent / "main.py"
+    source = pathlib.Path(__file__).resolve().parent / ".." / "src" / "main.py"
     spec = spec_from_file_location("__test__", str(source))
     main = module_from_spec(spec)
     spec.loader.exec_module(main)

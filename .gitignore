@@ -11,3 +11,5 @@ venv**
 
 .secrets
 secrets.json
+
+VERSION
