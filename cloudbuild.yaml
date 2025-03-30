@@ -54,7 +54,7 @@ steps:
   - '--region'
   - '${LOCATION}'
   - '--allow-unauthenticated'
-  - --ingress' 
+  - '--ingress' 
   - 'internal'
   - '--port' 
   - '12010'
