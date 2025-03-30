@@ -43,7 +43,7 @@ steps:
   - 'pytest'
   - '--no-cov'
   dir: ${_BUILD_ROOT}
-  serviceAccount: 'projects/daisy-dev01/serviceAccounts/test-runner@daisy-dev01.iam.gserviceaccount.com'
+#  serviceAccount: 'projects/daisy-dev01/serviceAccounts/test-runner@daisy-dev01.iam.gserviceaccount.com'
 
 substitutions:
   _PYIMAGE: 'python:3.12'
