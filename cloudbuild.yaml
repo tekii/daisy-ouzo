@@ -1,0 +1,51 @@
+#
+steps:
+- name: ${_PYIMAGE}
+  entrypoint: 'python'
+  args: 
+  - '-m'
+  - 'pip'
+  - 'install'
+  - '--progress-bar'
+  - 'off'
+  - '--root-user-action'
+  - 'ignore'
+  - '--no-warn-script-location'
+  - '--user' # this prevent losing the upgrade between steps
+  - '--upgrade'
+  - 'pip'
+  dir: ${_BUILD_ROOT}
+
+# install tests requeriments
+- name: ${_PYIMAGE}
+  entrypoint: 'python'
+  args: 
+  - '-m'
+  - 'pip'
+  - 'install'
+  - '--progress-bar'
+  - 'off'
+  - '--root-user-action'
+  - 'ignore'
+  - '--no-warn-script-location'
+  - '--user' 
+  - '-r'
+  - 'src/requirements.txt'
+  - '-r'
+  - 'requirements_test.txt'
+  dir: ${_BUILD_ROOT}
+
+# run the tests
+- name: ${_PYIMAGE}
+  entrypoint: 'python'
+  args: 
+  - '-m'
+  - 'pytest'
+  - '--no-cov'
+  dir: ${_BUILD_ROOT}
+
+substitutions:
+  _PYIMAGE: 'python:3.12'
+  _BUILD_ROOT: ouzo_root
+
+
