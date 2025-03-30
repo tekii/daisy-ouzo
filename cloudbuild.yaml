@@ -69,7 +69,7 @@ steps:
   - '--service-account' 
   - '${_CRUN_ACCOUNT}' 
   - '--set-build-env-vars' 
-  - 'GOOGLE_PYTHON_VERSION="3.12.x"' 
+  - 'GOOGLE_PYTHON_VERSION="3.12"' 
   - '--source'
   - '.'
   dir: ${_BUILD_ROOT}/src
