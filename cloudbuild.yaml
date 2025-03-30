@@ -43,15 +43,46 @@ steps:
   - 'pytest'
   - '--no-cov'
   dir: ${_BUILD_ROOT}
-#  serviceAccount: 'projects/daisy-dev01/serviceAccounts/test-runner@daisy-dev01.iam.gserviceaccount.com'
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: 
+  - 'beta'
+  - 'run'
+  - 'deploy'
+  - 'ouzo'
+  - '--region'
+  - '${LOCATION}'
+  - '--allow-unauthenticated'
+  - --ingress' 
+  - 'internal'
+  - '--port' 
+  - '12010'
+  - '--concurrency' 
+  - '8' 
+  - '--min-instances' 
+  - '0' 
+  - '--max-instances' 
+  - '2' 
+  - '--execution-environment' 
+  - 'gen2' 
+  - '--service-account' 
+  - '${_CRUN_ACCOUNT}' 
+  - '--set-build-env-vars' 
+  - 'GOOGLE_PYTHON_VERSION="3.12.x"' 
+  - '--source'
+  - '.'
+  dir: ${_BUILD_ROOT}/src
 
 substitutions:
   _PYIMAGE: 'python:3.12'
   _BUILD_ROOT: ouzo_root
 
-#logsBucket: 'https://console.cloud.google.com/storage/browser/daisy-dev01_cloudbuild'
-#options:
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 #  logging: GCS_ONLY
-#  logging: CLOUD_LOGGING_ONLY
+#logsBucket: 'https://console.cloud.google.com/storage/browser/daisy-dev01_cloudbuild'
+#serviceAccount: 'projects/daisy-dev01/serviceAccounts/test-runner@daisy-dev01.iam.gserviceaccount.com'
 
 
