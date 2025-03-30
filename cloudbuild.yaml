@@ -50,8 +50,8 @@ substitutions:
   _BUILD_ROOT: ouzo_root
 
 #logsBucket: 'https://console.cloud.google.com/storage/browser/daisy-dev01_cloudbuild'
-options:
+#options:
 #  logging: GCS_ONLY
-  logging: CLOUD_LOGGING_ONLY
+#  logging: CLOUD_LOGGING_ONLY
 
 
