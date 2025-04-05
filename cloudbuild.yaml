@@ -34,7 +34,9 @@ steps:
   - '-r'
   - 'requirements_test.txt'
   dir: ${_BUILD_ROOT}
-
+  env:
+  - 'PYTHON_REPO_URL=${_PYTHON_REPO_URL}'
+  
 # run the tests
 - name: ${_PYIMAGE}
   entrypoint: 'python'
@@ -68,7 +70,8 @@ steps:
   - 'gen2' 
   - '--service-account' 
   - '${_CRUN_ACCOUNT}' 
-  #- '--set-build-env-vars' 
+  - '--set-build-env-vars' 
+  - 'PYTHON_REPO_URL=${_PYTHON_REPO_URL}'
   #- 'GOOGLE_PYTHON_VERSION="3.12"' 
   - '--source'
   - '.'
