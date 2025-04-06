@@ -30,7 +30,7 @@ app = Flask(__name__)  # the app is declare after the logger is setup
 
 @app.errorhandler(500)
 def handle_500(e):
-    logging.exception(exc_info=e)
+    logging.exception(msg="500, internal server error in ouzo.", exc_info=e)
     error = str(e)
     return jsonify(error=error), 500
 
