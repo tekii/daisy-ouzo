@@ -71,6 +71,7 @@ gcloud \
     --repo-name="daisy" \
     --branch-pattern="^ouzo$" \
     --included-files="ouzo_root/**" \
+    --ignored-files="ouzo_root/scripts/**" \
     --build-config="ouzo_root/cloudbuild.yaml" \
     --substitutions="_CRUN_ACCOUNT=ouzo-552@daisy-dev01.iam.gserviceaccount.com,_PYTHON_REPO_URL=${PYTHON_REPO_URL}"
 
