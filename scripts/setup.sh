@@ -3,7 +3,7 @@ set -e
 
 # common stuff
 MODULE_NAME=ouzo
-ATTEMPT_SUFFIX="-16"
+#ATTEMPT_SUFFIX="-16"
 SLEEP=3
 
 source ../../scripts/common.sh
@@ -40,15 +40,24 @@ gcloud \
     --condition=None
 sleep $SLEEP
 
-## grants the role to allow run builds
-## https://cloud.google.com/build/docs/iam-roles-permissions#predefined_roles
-#gcloud projects add-iam-policy-binding $PROJECT_ID \
-#    --member="serviceAccount:${SERVICE_ACCOUNT}" \
-#    --role=roles/cloudbuild.serviceAgent \
-##   --role="roles/storage.objectUser" -role="roles/artifactregistry.writer"
+# grants the account permission to run the queries in the test
+gcloud \
+    projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:${SERVICE_ACCOUNT}" \
+    --role='roles/bigquery.jobUser' \
+    --condition=None
+sleep $SLEEP
 
-
-#gcloud iam service-accounts add-iam-policy-binding --project=daisy-tekii builder-tester@daisy-tekii.iam.gserviceaccount.com --role=roles/cloudbuild.serviceAgent
+# grants the account the role over the table to allow it to read
+# https://cloud.google.com/bigquery/docs/access-control
+bq \
+    add-iam-policy-binding \
+    --member="serviceAccount:${SERVICE_ACCOUNT}" \
+    --project_id=$PROJECT_ID \
+    --dataset_id=orange \
+    --role='roles/bigquery.dataViewer' \
+    catalogo_electronico_by_gln
+sleep $SLEEP
 
 # create package trigger
 # https://cloud.google.com/sdk/gcloud/reference/builds/triggers/create/github
