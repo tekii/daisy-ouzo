@@ -17,3 +17,6 @@ testpaths = [ "tests", ]
 
 [tool.coverage.run]
 omit = ["tests/**"]
+
+[tool.isort]
+profile = "black"
