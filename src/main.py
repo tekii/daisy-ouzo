@@ -8,7 +8,7 @@ from flask import Flask, request, jsonify
 from werkzeug.routing import PathConverter
 
 from tkerror import TkError
-from tekii_margot_toolbox import gs1
+from tekii.margot.toolbox import gs1
 from party_catalog import ThePartyCatalog
 import event_lookup
 import row_uuid

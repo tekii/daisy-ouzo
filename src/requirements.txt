@@ -3,4 +3,4 @@ Flask>=3.0.3
 gunicorn>=22.0.0
 google-cloud-logging>=3.11.4
 google-cloud-bigquery>=3.22.0
-tekii-margot-toolbox>=0,<1
+tekii-margot-bundle>=1,<2
