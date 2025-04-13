@@ -2,7 +2,7 @@
 set -e
 
 # common stuff
-MODULE_NAME=ouzo
+PACKAGE_NAME=ouzo
 #ATTEMPT_SUFFIX="-16"
 SLEEP=5
 
@@ -11,15 +11,15 @@ source ../../scripts/common.sh
 #
 # TEST ACCOUNT
 #
-TEST_ACCOUNT_NAME=${MODULE_NAME}-test${ATTEMPT_SUFFIX}
+TEST_ACCOUNT_NAME=${PACKAGE_NAME}-test${ATTEMPT_SUFFIX}
 TEST_ACCOUNT_EMAIL="${TEST_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 TEST_ACCOUNT="projects/${PROJECT_ID}/serviceAccounts/${TEST_ACCOUNT_EMAIL}"
 
 gcloud \
     iam service-accounts create ${TEST_ACCOUNT_NAME} \
     --project=$PROJECT_ID \
-    --display-name="${MODULE_NAME} test account ${ATTEMPT}" \
-    --description="Test account ${ATTEMPT} for service ${MODULE_NAME} "
+    --display-name="${PACKAGE_NAME} test account ${ATTEMPT}" \
+    --description="Test account ${ATTEMPT} for service ${PACKAGE_NAME} "
 sleep $SLEEP
 
 gcloud \
@@ -49,8 +49,8 @@ sleep $SLEEP
 gcloud \
     iam service-accounts create ${BUILD_ACCOUNT_NAME} \
     --project=$PROJECT_ID \
-    --display-name="${MODULE_NAME} build account ${ATTEMPT}" \
-    --description="Build account ${ATTEMPT} for service ${MODULE_NAME}"
+    --display-name="${PACKAGE_NAME} build account ${ATTEMPT}" \
+    --description="Build account ${ATTEMPT} for service ${PACKAGE_NAME}"
 sleep $SLEEP
 
 #
@@ -143,7 +143,7 @@ gcloud \
     builds triggers create github \
     --project=$PROJECT_ID \
     --region=$LOCATION \
-    --name="${MODULE_NAME}-trigger${ATTEMPT_SUFFIX}" \
+    --name="${PACKAGE_NAME}-trigger${ATTEMPT_SUFFIX}" \
     --service-account="${BUILD_ACCOUNT}" \
     --repo-owner="tekii" \
     --repo-name="daisy" \
