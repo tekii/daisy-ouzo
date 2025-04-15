@@ -1,8 +1,10 @@
 """THE PARTY CATALOG"""
 
 import logging
+
 from google.auth import default as default_credentials
 from google.cloud import bigquery
+
 from tkerror import TkError
 
 __all__ = ["ThePartyCatalog"]
@@ -41,11 +43,12 @@ class ThePartyCatalog(object):
             logging.info(msg=f"PartyLookup - Cache MISS -{gln}-{cuit}-")
 
             query = f"""
-            SELECT gln, cuit, id_tipo_agente, nombre_tipo_agente FROM `{self._project_id}.orange.catalogo_electronico_by_gln` WHERE 
-            CASE 
-              WHEN @gln IS NOT NULL AND @cuit IS NOT NULL THEN gln = @gln AND cuit = @cuit 
-              WHEN @gln IS NOT NULL AND @cuit IS NULL THEN gln = @gln 
-              WHEN @gln IS NULL AND @cuit IS NOT NULL THEN cuit = @cuit 
+            SELECT gln, cuit, id_tipo_agente, nombre_tipo_agente FROM
+              `{self._project_id}.orange.catalogo_electronico_by_gln` WHERE
+            CASE
+              WHEN @gln IS NOT NULL AND @cuit IS NOT NULL THEN gln = @gln AND cuit = @cuit
+              WHEN @gln IS NOT NULL AND @cuit IS NULL THEN gln = @gln
+              WHEN @gln IS NULL AND @cuit IS NOT NULL THEN cuit = @cuit
               ELSE FALSE
             END LIMIT 10;"""
             job_config = bigquery.QueryJobConfig(
@@ -54,7 +57,9 @@ class ThePartyCatalog(object):
                     bigquery.ScalarQueryParameter("cuit", "STRING", cuit),
                 ]
             )
-            results = self._client.query_and_wait(query, job_config=job_config)  # Make an API request.
+            results = self._client.query_and_wait(
+                query, job_config=job_config
+            )  # Make an API request.
 
             n = results.total_rows
 
@@ -72,7 +77,12 @@ class ThePartyCatalog(object):
 
             row = next(results)
 
-            item = {"gln": row.gln, "cuit": row.cuit, "idTipoAgente": row.id_tipo_agente, "nombreTipoAgente": row.nombre_tipo_agente}
+            item = {
+                "gln": row.gln,
+                "cuit": row.cuit,
+                "idTipoAgente": row.id_tipo_agente,
+                "nombreTipoAgente": row.nombre_tipo_agente,
+            }
 
             self._cache[gln] = item.copy()
 
