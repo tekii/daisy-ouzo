@@ -6,7 +6,7 @@ import pathlib
 def client():
     from importlib.util import spec_from_file_location, module_from_spec
 
-    source = pathlib.Path(__file__).resolve().parent / ".." / "src" / "main.py"
+    source = pathlib.Path("src/main.py")
     spec = spec_from_file_location("__test__", str(source))
     main = module_from_spec(spec)
     spec.loader.exec_module(main)
