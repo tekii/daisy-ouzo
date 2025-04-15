@@ -1,7 +1,8 @@
 """EVENT LOOKUP"""
 
 from tkerror import TkError
-from .event import TYPE, EVENTS
+
+from .event import EVENTS, TYPE
 
 
 def lookup_event(movimiento, file):

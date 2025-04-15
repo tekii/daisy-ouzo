@@ -1,19 +1,17 @@
+import logging
 import os
 import re
 from datetime import datetime, timezone
-import logging
 
-
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify, request
+from tekii.margot.toolbox import gs1
 from werkzeug.routing import PathConverter
 
-from tkerror import TkError
-from tekii.margot.toolbox import gs1
-from party_catalog import ThePartyCatalog
 import event_lookup
 import row_uuid
 import symbol_processor
-
+from party_catalog import ThePartyCatalog
+from tkerror import TkError
 
 if __name__ != "__main__" and __name__ != "__test__":
     import google.cloud.logging
@@ -53,7 +51,11 @@ def handle_400(e):
 @app.errorhandler(TkError)
 def handle_tkerror(e):
 
-    msg = e.errorArgs["message"][0] if "message" in e.errorArgs else e.errorArgs["mensaje"][0] if "mensaje" in e.errorArgs else "No message"
+    msg = (
+        e.errorArgs["message"][0]
+        if "message" in e.errorArgs
+        else e.errorArgs["mensaje"][0] if "mensaje" in e.errorArgs else "No message"
+    )
     error = {
         "errorType": "MARGARITA",
         "errorCode": e.errorCode,

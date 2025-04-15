@@ -1,11 +1,11 @@
 """RowUUID"""
 
 from datetime import datetime
-from urllib.parse import unquote
-from pathlib import Path
 from hashlib import md5
-from tkerror import TkError
+from pathlib import Path
+from urllib.parse import unquote
 
+from tkerror import TkError
 
 __all__ = ["calculate"]
 
