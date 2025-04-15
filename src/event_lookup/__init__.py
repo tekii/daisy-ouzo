@@ -93,8 +93,7 @@ def lookup_event(movimiento, file):
             )
 
     try:
-        e = EVENTS[evento_id]
-        detalle = e["detalle"]
+        detalle = EVENTS[evento_id]["detalle"]
     except KeyError:
         detalle = "no detalle"
 
