@@ -32,7 +32,7 @@ steps:
   - '-r'
   - 'src/requirements.txt'
   - '-r'
-  - 'requirements_test.txt'
+  - 'tests/requirements.txt'
   dir: ${_BUILD_ROOT}
   env:
   - 'PYTHON_REPO_URL=${_PYTHON_REPO_URL}'
