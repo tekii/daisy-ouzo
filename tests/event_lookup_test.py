@@ -1,4 +1,3 @@
-import pytest
 from event_lookup import lookup_event, TYPE
 
 

@@ -1,4 +1,3 @@
-import pytest
 import json
 from flask import url_for
 
@@ -15,7 +14,9 @@ def test_party_lookup_null_null(client):
 def test_party_lookup_malformed_gln_null(client):
 
     with client.application.test_request_context():
-        url = url_for("party_lookup", gln="0779339700000", cuit=None)  # remove the last digit (7) and add 0
+        url = url_for(
+            "party_lookup", gln="0779339700000", cuit=None
+        )  # remove the last digit (7) and add 0
 
     response = client.get(url)
     assert response.status_code == 400
@@ -45,7 +46,7 @@ def test_party_lookup_valid_gln_null_cuit(client):
     assert response.status_code == 200
     data = json.loads(response.data)
     assert len(data) == 5
-    assert data["cached"] == False
+    assert True if "cached" in data and data["cached"] is False else False
     assert data["gln"] == "7793397000007"
     response = client.get(url)
     assert response.status_code == 200
@@ -77,6 +78,6 @@ def test_party_lookup_valid_gln_valid_cuit(client):
     assert response.status_code == 200
     data = json.loads(response.data)
     assert len(data) == 5
-    assert data["cached"] == False
+    assert True if data.has_key("cached") and data["cached"] is True else False
     assert data["gln"] == "7793397000007"
     assert data["cuit"] == "30589864642"

@@ -109,7 +109,8 @@ def test_calculate_rowid_a_2(client):
             "calculate_rowid",
             actor="7793397000007",
             row="109",
-            encoded_path="%2Fmnt%2Fv1%2Ftemp%2Ftuteur%2F4a4355d400f611f08890dbe26f81d24d%2F20241012%2F1232%2Fcorrected%2FTUTEUR1210241232.TXT",
+            encoded_path="%2Fmnt%2Fv1%2Ftemp%2Ftuteur%2F4a4355d400f611f08890dbe26f81d24d%2F20241012"
+            "%2F1232%2Fcorrected%2FTUTEUR1210241232.TXT",
         )
 
     response = client.get(url)
@@ -129,7 +130,9 @@ def test_08(client):
 def test_09(client):
 
     with client.application.test_request_context():
-        url = url_for("serial_processor", serial_w_id="01080540830151632110000042624017260216101207642")
+        url = url_for(
+            "serial_processor", serial_w_id="01080540830151632110000042624017260216101207642"
+        )
 
     response = client.get(url)
     assert response.status_code == 200

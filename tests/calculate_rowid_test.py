@@ -6,7 +6,10 @@ from flask import url_for
 @pytest.mark.skip
 def test_calculate_rowid_a_2(client):
 
-    encoded_path = "%2Fmnt%2Fv1%2Ftemp%2Ftuteur%2F4a4355d400f611f08890dbe26f81d24d%2F20241012%2F1232%2Fcorrected%2FTUTEUR1210241232.TXT"
+    encoded_path = (
+        "%2Fmnt%2Fv1%2Ftemp%2Ftuteur%2F4a4355d400f611f08890dbe26f81d24d%2F20241012"
+        "%2F1232%2Fcorrected%2FTUTEUR1210241232.TXT"
+    )
 
     with client.application.test_request_context():
         url = url_for(
@@ -34,12 +37,16 @@ def test_calculate_rowid_a_2(client):
 
     assert data_3 == response_2.data
 
-    #'{"errorType":"MARGARITA","errorCode":6001,"errorArgs":{"Errors":["030"]},"errorTimeStamp":"2025-03-15T02:02:12.294Z"}'
+    # '{"errorType":"MARGARITA","errorCode":6001,"errorArgs":{"Errors":["030"]},
+    # "errorTimeStamp":"2025-03-15T02:02:12.294Z"}'
 
 
 def test_calculate_rowid_raw(client):
 
-    raw_path = "%2Fmnt%2Fv1%2Ftemp%2Ftuteur%2F4a4355d400f611f08890dbe26f81d24d%2F20241012%2F1232%2Fcorrected%2FTUTEUR1210241232.TXT"
+    raw_path = (
+        "%2Fmnt%2Fv1%2Ftemp%2Ftuteur%2F4a4355d400f611f08890dbe26f81d24d%2F20241012%2F1232"
+        "%2Fcorrected%2FTUTEUR1210241232.TXT"
+    )
 
     url = "/7793397000007/108/" + raw_path
     response_ = client.get(url)
