@@ -1,3 +1,111 @@
 {
-    "python.testing.pytestEnabled": false,
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true
+    },
+    "black-formatter.args": [
+        "--line-length",
+        "100",
+        "--preview"
+    ],
+    "cloudcode.apigee.gemini.enable": false,
+    "cloudcode.autoDependencies": "off",
+    "cloudcode.duetAI.codeGenerationInterface": "ghostText",
+    "cloudcode.duetAI.inlineSuggestions.enableAuto": false,
+    "cloudcode.duetAI.languages": [
+        "python",
+        "sql"
+    ],
+    "cloudcode.enable1stPartyAuth": false,
+    "cloudcode.enableGkeAutopilotSupport": false,
+    "cloudcode.enableMinikubeGcpAuthPlugin": true,
+    "cloudcode.enableTelemetry": false,
+    "cloudcode.project": "daisy-dev01",
+    "cloudcode.updateAdcOnLogin": false,
+    "editor.formatOnSave": true,
+    "editor.maxTokenizationLineLength": 200000,
+    "explorer.excludeGitIgnore": false,
+    "files.associations": {
+        ".dockerignore": "ignore",
+        ".gcloudignore": "ignore",
+        "requirements*.txt": "pip-requirements"
+    },
+    "files.exclude": {
+        "**/__*cache__": true,
+        "**/.*_cache": true,
+        "**/venv": true
+    },
+    "flake8.args": [
+        "--ignore=E402,F841,W503,E203",
+        "--max-line-length=100"
+    ],
+    "geminicodeassist.enable": false,
+    "geminicodeassist.enableTelemetry": false,
+    "geminicodeassist.inlineSuggestions.enableAuto": true,
+    "git.closeDiffOnOperation": true,
+    "git.defaultBranchName": "",
+    "git.mergeEditor": true,
+    "isort.args": [
+        "--profile",
+        "black"
+    ],
+    "isort.check": true,
+    "mypy-type-checker.args": [
+        "--check-untyped-defs",
+        "--disable-error-code=import-untyped"
+    ],
+    "mypy-type-checker.preferDaemon": true,
+    "mypy-type-checker.reportingScope": "workspace",
+    "pylint.args": [
+        "--disable=W0212",
+        "--disable=C0116",
+        "--disable=C0104",
+        "--diable=C0114",
+        "--argument-naming-style=camelCase",
+    ],
+    "pylint.ignorePatterns": [
+        ".attic/*"
+    ],
+    "python.analysis.autoFormatStrings": true,
+    "python.analysis.completeFunctionParens": true,
+    "python.analysis.exclude": [
+        ".attic"
+    ],
+    "python.analysis.extraPaths": [],
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.autoComplete.extraPaths": [],
+    "python.createEnvironment.contentButton": "show",
+    "python.formatting.autopep8Args": [
+        "--max-line-length",
+        "100",
+        "--experimental"
+    ],
+    "python.languageServer": "Pylance",
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.terminal.shellIntegration.enabled": true,
+    "python.testing.pytestArgs": [
+        "."
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "sarif-viewer.connectToGithubCodeScanning": "off",
+    "testing.automaticallyOpenTestResults": "openOnTestFailure",
+    "testing.coverageBarThresholds": {
+        "green": 90,
+        "red": 0,
+        "yellow": 60
+    },
+    "testing.defaultGutterClickAction": "contextMenu",
+    "workbench.colorCustomizations": {
+        "editorInlayHint.background": "#002b36",
+        "editorInlayHint.foreground": "#524a4a"
+    },
+    "workbench.colorTheme": "Default Dark Modern",
+    "workbench.settings.enableNaturalLanguageSearch": false,
+    "zenMode.centerLayout": false,
+    "zenMode.showTabs": "none"
 }
